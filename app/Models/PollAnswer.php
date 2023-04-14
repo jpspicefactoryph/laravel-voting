@@ -37,7 +37,7 @@ class PollAnswer extends Model
      */  
     public function pollVotes(): HasMany
     {
-        return $this->hasMany(PollVote::class);
+        return $this->hasMany(PollVote::class, 'poll_answer_id');
     }
 
 }

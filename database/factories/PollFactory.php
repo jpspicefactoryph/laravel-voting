@@ -20,8 +20,8 @@ class PollFactory extends Factory
         $users = User::pluck('id')->all();
         
         return [
-            'title' => fake()->word(),
-            'desription' => fake()->catchPhrase(),
+            'title' => fake()->catchPhrase(),
+            'description' => fake()->paragraph(),
             'is_published' => fake()->randomElement([0,1]),
             'starts_at' => fake()->dateTimeBetween('2023-01-01', '2023-01-31')->format('Y-m-d'),
             'ends_at' => fake()->dateTimeBetween('2023-05-01', '2023-05-31')->format('Y-m-d'),

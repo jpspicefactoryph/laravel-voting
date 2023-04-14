@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('polls', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('title');
-            $table->longText('desription');
+            $table->longText('description');
             $table->integer('is_published');
             $table->datetime('starts_at');
             $table->datetime('ends_at');

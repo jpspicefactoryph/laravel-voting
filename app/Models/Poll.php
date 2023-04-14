@@ -53,7 +53,17 @@ class Poll extends Model
      */  
     public function pollQuestions(): HasMany
     {
-        return $this->HasMany(PollQuestion::class);
+        return $this->HasMany(PollQuestion::class, 'poll_id');
+    }
+
+    /**
+     * Get the Poll Questions
+     * @return Int<Questions>
+     */  
+    public function scopeCountPollQuestions($query): Int
+    {
+        $pollQuestions = $query->count();
+        return $pollQuestions === null ? 0 : $pollQuestions;
     }
 
     /**
