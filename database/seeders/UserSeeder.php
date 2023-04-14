@@ -28,31 +28,31 @@ class UserSeeder extends Seeder
             [ 'name' => 'Input'],
         ]);
 
-        $users = User::factory(15)->create();
-
-        $polls = Poll::factory(5)->create()->each(function($poll) use($categories){
-            PollCategory::factory()->create([
-                'poll_id' => $poll->id,
-            ]);
-
-            PollQuestion::factory(1)->create([
-                'poll_id' => $poll->id,
-            ])->each(function($question){
-                
-                PollAnswer::factory(rand(1, 3))->create([
-                    'poll_id' => $question->poll_id,
-                    'poll_question_id' => $question->id,
-                ])->each(function($answer){
+        $users = User::factory(15)->create()->each(function($user) use($categories){
+            $polls = Poll::factory(5)->create()->each(function($poll) use($categories){
+            
+                PollCategory::factory()->create([
+                    'poll_id' => $poll->id,
+                ]);
+    
+                PollQuestion::factory(1)->create([
+                    'poll_id' => $poll->id,
+                ])->each(function($question){
                     
-                    PollVote::factory()->create([
-                        'poll_id' => $answer->poll_id,
-                        'poll_question_id' => $answer->poll_question_id,
-                        'poll_answer_id' => $answer->id,
-                    ]);
+                    PollAnswer::factory(rand(1, 3))->create([
+                        'poll_id' => $question->poll_id,
+                        'poll_question_id' => $question->id,
+                    ])->each(function($answer){
+                        
+                        PollVote::factory()->create([
+                            'poll_id' => $answer->poll_id,
+                            'poll_question_id' => $answer->poll_question_id,
+                            'poll_answer_id' => $answer->id,
+                        ]);
+                    });
                 });
             });
         });
-
 
     }
 }

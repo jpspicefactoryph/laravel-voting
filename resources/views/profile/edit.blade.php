@@ -1,5 +1,13 @@
 <x-app-layout>
-    <x-alert></x-alert>
+    
+    @if(Session::has('status'))
+        <div class="fixed top-4 right-4">
+            <x-alert type="{{ Session::get('status')['status'] }}">
+                {{Session::get('status')['message']}}    
+            </x-alert>
+        </div>
+    @endif
+
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
             {{ __('Profile') }}

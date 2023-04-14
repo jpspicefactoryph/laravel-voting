@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\AssignedPollController;
+use App\Http\Controllers\PollController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -18,9 +20,25 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::group(['middleware' => ['auth']], function () {
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
+
+    /**
+     * Routes that includes Polls
+     */
+    Route::resource('myPolls', PollController::class);
+    Route::resource('assignedPolls', AssignedPollController::class);
+    // Route::controller(PollController::class)->group(function () {
+    //     Route::get('/myPolls', 'index')->name('polls.myPolls');
+    //     Route::get('/assignedPolls', 'index')->name('polls.myPolls');
+    // });
+});
+
+// Route::get('/dashboard', function () {
+//     return view('dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

@@ -5,15 +5,49 @@ namespace App\Http\Controllers;
 use App\Models\Poll;
 use App\Http\Requests\StorePollRequest;
 use App\Http\Requests\UpdatePollRequest;
+use App\Services\PollService;
+use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PollController extends Controller
 {
     /**
+     * @var pollService
+     */
+    protected $pollService;
+
+    /**
+     * PollController Constructor
+     *
+     * @param PollService $pollService
+     *
+     */
+    public function __construct(PollService $pollService)
+    {
+        $this->pollService = $pollService;
+    }
+
+    /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $result = ['status' => 200];
+        
+        try {
+            $result['data'] = $this->pollService->getAllMyPolls(Auth::id());
+        } catch (Exception $e) {
+            $result = [
+                'status' => 500,
+                'error' => $e->getMessage()
+            ];
+        }
+
+        // return dd($result);
+        return view('polls.my-polls', [
+            'myPolls' => $result['data'],
+        ]);
     }
 
     /**
@@ -35,9 +69,22 @@ class PollController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Poll $poll)
+    public function show(Poll $myPoll)
     {
-        //
+        // try {
+        //     $result['data'] = $this->pollService->getMyPollDetails($myPoll);
+        // } catch (Exception $e) {
+        //     $result = [
+        //         'status' => 500,
+        //         'error' => $e->getMessage()
+        //     ];
+        // }
+        
+        // return $myPoll->with('pollQuestions.pollAnswers.pollVotes')->where('id', $myPoll->id)->get();
+        return view('polls.my-poll-details', [
+            'pollDetails' => response()->json($myPoll->with('pollQuestions.pollAnswers.pollVotes')->where('id', $myPoll->id)->get()),
+        ]);
+        // return $myPoll->with('pollQuestions.pollAnswers.pollVotes')->where('id', $myPoll->id)->get();
     }
 
     /**
