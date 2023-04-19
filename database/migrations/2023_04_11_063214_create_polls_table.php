@@ -15,7 +15,7 @@ return new class extends Migration
             $table->bigIncrements('id');
             $table->string('title');
             $table->longText('description');
-            $table->integer('is_published');
+            $table->integer('is_published')->default(0);
             $table->datetime('starts_at');
             $table->datetime('ends_at');
             $table->timestamps();

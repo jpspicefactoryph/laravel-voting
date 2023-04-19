@@ -4,17 +4,20 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 
 class Poll extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $guarded = [];
     /**
      * The attributes that are mass assignable.
      *
@@ -22,10 +25,10 @@ class Poll extends Model
      */
     protected $fillable = [
         'title',
-        'desription',
-        'is_published',
+        'description',
         'starts_at',
         'ends_at',
+        'user_id',
     ];
 
 
@@ -36,15 +39,17 @@ class Poll extends Model
      */
     protected $casts = [
         'user_id' => 'int',
+        'start_at' => 'datetime',
+        'end_at' => 'datetime',
     ];
 
     /**
-     * Get the category detail
-     * @return HasOne<Category  >
+     * Get the PollCategory
+     * @return belongsTo<pollCategory  >
      */  
-    public function category(): HasOne
+    public function pollCategory(): BelongsTo
     {
-        return $this->haseOne(Poll::class);
+        return $this->belongsTo(PollCategory::class, 'id', 'poll_id');
     }
 
     /**
@@ -53,17 +58,7 @@ class Poll extends Model
      */  
     public function pollQuestions(): HasMany
     {
-        return $this->HasMany(PollQuestion::class, 'poll_id');
-    }
-
-    /**
-     * Get the Poll Questions
-     * @return Int<Questions>
-     */  
-    public function scopeCountPollQuestions($query): Int
-    {
-        $pollQuestions = $query->count();
-        return $pollQuestions === null ? 0 : $pollQuestions;
+        return $this->hasMany(PollQuestion::class, 'poll_id', 'id');
     }
 
     /**
@@ -72,7 +67,7 @@ class Poll extends Model
      */  
     public function pollAnswers(): HasMany
     {
-        return $this->HasMany(PollAnswer::class);
+        return $this->hasMany(PollAnswer::class);
     }
 
 
@@ -82,7 +77,16 @@ class Poll extends Model
      */  
     public function pollVotes(): HasMany
     {
-        return $this->HasMany(PollVote::class);
+        return $this->hasMany(PollVote::class);
+    }
+
+    /**
+     * Get the Poll Answers
+     * @return HasMany<Answers>
+     */  
+    public function assignedUsers(): HasMany
+    {
+        return $this->hasMany(PollAssigned::class);
     }
     
     /**
@@ -91,6 +95,20 @@ class Poll extends Model
      */  
     public function user(): BelongsTo
     {
-        return $this->BelongsTo(User::class, 'id', 'user_id');
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
+
+
+    /**
+     * Get the Poll Questions
+     * @return Int<Questions>
+     */  
+    public function scopeGetVoterCount($query)
+    {
+        return $query->select('polls.*')
+            ->addSelect(DB::raw('COUNT(DISTINCT poll_votes.user_id) as voters_count'))
+            ->leftJoin('poll_votes', 'poll_votes.poll_id', '=', 'polls.id')
+            ->groupBy('polls.id');
+    }
+
 }
