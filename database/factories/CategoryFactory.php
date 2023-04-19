@@ -19,7 +19,7 @@ class CategoryFactory extends Factory
         return [
             'title' => fake()->catchPhrase(),
             'meta_title' => fake()->catchPhrase(),
-            'slug' => fake()->text(100),
+            'slug' => fake()->slug(6),
             'content' => fake()->text(100),
         ];
     }

@@ -2,17 +2,49 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PollAssigned;
+use App\Models\User;
+use App\Services\PollService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Exception;
+
 
 class AssignedPollController extends Controller
 {
+
+    /**
+     * @var pollService
+     */
+    protected $pollService;
+
+    /**
+     * PollController Constructor
+     *
+     * @param PollService $pollService
+     *
+     */
+    public function __construct(PollService $pollService)
+    {
+        $this->pollService = $pollService;
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
-    {
-        return view('polls.assignedPolls', [
-            'data' => 'assigned polls',
+    {   
+        try {
+            $result['data'] = $this->pollService->getAllMyAssignedPolls(Auth::id());
+        } catch (Exception $e) {
+            $result = [
+                'status' => 500,
+                'error' => $e->getMessage()
+            ];
+        }
+
+        return view('polls.assigned-polls', [
+            'myAssignedPolls' => $result['data'],
         ]);
     }
 

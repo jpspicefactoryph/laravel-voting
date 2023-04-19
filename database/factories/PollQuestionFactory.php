@@ -19,7 +19,8 @@ class PollQuestionFactory extends Factory
     public function definition(): array
     {
         $polls = Poll::pluck('id')->all();
-        $pollQuestionTypes = PollQuestionType::pluck('id')->all();
+        // $pollQuestionTypes = PollQuestionType::pluck('id')->all();
+        $pollQuestionTypes = [1,2];
 
         return [
             'content' => fake()->catchPhrase(),

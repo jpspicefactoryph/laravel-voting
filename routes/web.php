@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AssignedPollController;
 use App\Http\Controllers\PollController;
+use App\Http\Controllers\PollVoteController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -30,6 +31,7 @@ Route::group(['middleware' => ['auth']], function () {
      */
     Route::resource('myPolls', PollController::class);
     Route::resource('assignedPolls', AssignedPollController::class);
+    Route::resource('votePolls', PollVoteController::class);
     // Route::controller(PollController::class)->group(function () {
     //     Route::get('/myPolls', 'index')->name('polls.myPolls');
     //     Route::get('/assignedPolls', 'index')->name('polls.myPolls');
